@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+require __DIR__ . '/../vendor/autoload.php';
+
+use PHPNE\Console;
+
+$container = new Console\Container;
+
+$container['configuration'] = $container->share(function($container) {
+    return new Console\Configuration;
+});
+
+$container['configuration']->set('app.dir', realpath(__DIR__ . '/../_app'));
+$container['configuration']->set('pub.dir', realpath(__DIR__ . '/../..'));
+$container['configuration']->set('web.dir', realpath(__DIR__ . '/../web'));
+
+$container['finder'] = $container->share(function($container) {
+    $finder = new Symfony\Component\Finder\Finder;
+    return $finder->files()->name('*.html')->notPath('_layouts')->notPath('_partials');
+});
+
+$container['twig'] = $container->share(function($container) {
+    return new Twig_Environment(
+        new Twig_Loader_Filesystem($container['configuration']->get('web.dir'))
+    );
+});
+
+$console = new Console\Application;
+$console->setContainer($container);
+$console->add(new Console\Command\GenerateCommand);
+$console->run();
