@@ -17,21 +17,17 @@ class GenerateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $configuration  = $this->getApplication()->getConfiguration();
-        $twig           = $this->getApplication()->getTwig();
-        $finder         = $this->getApplication()->getFinder();
+        $container  = $this->getApplication()->getContainer();
+        
+        $pages      = $container['page.repository']->all();    
+        $posts      = $container['post.repository']->all();
 
-        foreach ($finder->in($configuration->get('web.dir')) as $file) {
-
-            $contents   = $twig->render($file->getRelativePathname());
-            $dir        = sprintf('%s/%s', $configuration->get('pub.dir'), $file->getRelativePath());
-            $path       = sprintf('%s/%s', $dir, $file->getFilename());
-
-            if ( ! is_dir($dir)) {
-                mkdir($dir, 0777, true);
-            }
-
-            file_put_contents($path, $contents);
+        foreach ($pages as $page) {
+            $container['page.writer']->write(array(
+                'page'  => $page,
+                'pages' => $pages,
+                'posts' => $posts,
+            ));
         }
     }
 }

@@ -1,14 +1,13 @@
 <?php
 namespace PHPNE\Console;
 
-class Configuration
-{
-    protected
-        $storage = array();
+use ArrayObject;
 
-    public function __construct($array = array())
+class Configuration extends ArrayObject
+{
+    public function __construct(array $array = array())
     {
-        $this->storage = $array;
+        parent::__construct($array);
     }
 
     public function get($key)
@@ -17,18 +16,18 @@ class Configuration
             return;
         }
 
-        return $this->storage[ $key ];
+        return $this->offsetGet($key);
     }
 
     public function set($key, $value)
     {
-        $this->storage[ $key ] = $value;
+        $this->offsetSet($key, $value);
 
         return $this;
     }
 
     public function has($key)
     {
-        return isset($this->storage[ $key ]);
+        return $this->offsetExists($key);
     }
 }

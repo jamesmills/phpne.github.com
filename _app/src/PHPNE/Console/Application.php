@@ -28,19 +28,4 @@ class Application extends BaseApplication
 
         return $this;
     }
-
-    public function getConfiguration()
-    {
-        return $this->container['configuration'];
-    }
-
-    public function getTwig()
-    {
-        return $this->container['twig'];
-    }
-
-    public function getFinder()
-    {
-        return $this->container['finder'];
-    }
 }

@@ -7,21 +7,41 @@ use PHPNE\Console;
 $container = new Console\Container;
 
 $container['configuration'] = $container->share(function($container) {
-    return new Console\Configuration;
-});
-
-$container['configuration']->set('app.dir', realpath(__DIR__ . '/../_app'));
-$container['configuration']->set('pub.dir', realpath(__DIR__ . '/../..'));
-$container['configuration']->set('web.dir', realpath(__DIR__ . '/../web'));
-
-$container['finder'] = $container->share(function($container) {
-    $finder = new Symfony\Component\Finder\Finder;
-    return $finder->files()->name('*.html')->notPath('_layouts')->notPath('_partials');
+    return new Console\Configuration(array(
+        'view.path'         => realpath(__DIR__ . '/../views'),
+        'page.path'         => realpath(__DIR__ . '/../views/pages'),
+        'page.save.path'    => realpath(__DIR__ . '/../..'),
+        'post.path'         => realpath(__DIR__ . '/../views/pages/posts'),
+        'post.save.path'    => realpath(__DIR__ . '/../../posts'),
+    ));
 });
 
 $container['twig'] = $container->share(function($container) {
     return new Twig_Environment(
-        new Twig_Loader_Filesystem($container['configuration']->get('web.dir'))
+        new Twig_Loader_Filesystem(array(
+            $container['configuration']->get('view.path'),
+            $container['configuration']->get('page.path'),
+            $container['configuration']->get('post.path'),
+        ))
+    );
+});
+
+$container['page.repository'] = $container->share(function($container) {
+    return new PHPNE\Entity\PageRepository(
+        $container['configuration']->get('page.path')
+    );
+});
+
+$container['page.writer'] = $container->share(function($container) {
+    return new PHPNE\Entity\PageWriter(
+        $container['twig'],
+        $container['configuration']->get('page.save.path')
+    );
+});
+
+$container['post.repository'] = $container->share(function($container) {
+    return new PHPNE\Entity\PostRepository(
+        $container['configuration']->get('post.path')
     );
 });
 
