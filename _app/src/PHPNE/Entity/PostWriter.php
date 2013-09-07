@@ -5,9 +5,9 @@ class PostWriter extends AbstractWriter
 {
     public function write(array $params = array())
     {
-        $data   = $this->twig->render($params['page']->getFilename(), $params);
-        $file   = sprintf('%s/%s', $this->save_dir, $params['page']->getFilename());
-        
+        $data   = $this->twig->render('layouts/post.html', $params);
+        $file   = sprintf('%s/%s', $this->getSavePath(), $params['post']->getName());
+
         return file_put_contents($file, $data);
     }
 }

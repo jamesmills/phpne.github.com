@@ -17,13 +17,19 @@ $container['configuration'] = $container->share(function($container) {
 });
 
 $container['twig'] = $container->share(function($container) {
-    return new Twig_Environment(
+    $twig = new Twig_Environment(
         new Twig_Loader_Filesystem(array(
             $container['configuration']->get('view.path'),
             $container['configuration']->get('page.path'),
             $container['configuration']->get('post.path'),
         ))
     );
+    
+    $twig->addExtension(new Aptoma\Twig\Extension\MarkdownExtension(
+        new dflydev\markdown\MarkdownParser
+    ));
+    
+    return $twig;
 });
 
 $container['page.repository'] = $container->share(function($container) {
@@ -33,16 +39,21 @@ $container['page.repository'] = $container->share(function($container) {
 });
 
 $container['page.writer'] = $container->share(function($container) {
-    return new PHPNE\Entity\PageWriter(
-        $container['twig'],
-        $container['configuration']->get('page.save.path')
-    );
+    $writer = new PHPNE\Entity\PageWriter($container['twig']);
+    
+    return $writer->setSavePath($container['configuration']->get('page.save.path'));
 });
 
 $container['post.repository'] = $container->share(function($container) {
     return new PHPNE\Entity\PostRepository(
         $container['configuration']->get('post.path')
     );
+});
+
+$container['post.writer'] = $container->share(function($container) {
+    $writer = new PHPNE\Entity\PostWriter($container['twig']);
+    
+    return $writer->setSavePath($container['configuration']->get('post.save.path'));
 });
 
 $console = new Console\Application;

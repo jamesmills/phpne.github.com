@@ -7,11 +7,22 @@ abstract class AbstractWriter
 {
     protected
         $twig,
-        $save_dir;
+        $save_path;
 
-    public function __construct(Twig $twig, $save_dir)
+    public function __construct(Twig $twig)
     {
-        $this->twig     = $twig;
-        $this->save_dir = $save_dir;
+        $this->twig = $twig;
+    }
+
+    public function setSavePath($path)
+    {
+        $this->save_path = $path;
+
+        return $this;
+    }
+
+    public function getSavePath()
+    {
+        return $this->save_path;
     }
 }

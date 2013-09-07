@@ -18,13 +18,21 @@ class GenerateCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $container  = $this->getApplication()->getContainer();
-        
-        $pages      = $container['page.repository']->all();    
+
+        $pages      = $container['page.repository']->all();
         $posts      = $container['post.repository']->all();
 
         foreach ($pages as $page) {
             $container['page.writer']->write(array(
                 'page'  => $page,
+                'pages' => $pages,
+                'posts' => $posts,
+            ));
+        }
+
+        foreach ($posts as $post) {
+            $container['post.writer']->write(array(
+                'post'  => $post,
                 'pages' => $pages,
                 'posts' => $posts,
             ));
