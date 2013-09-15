@@ -6,7 +6,7 @@ use PHPNE\Console;
 
 $container = new Console\Container;
 
-$container['configuration'] = $container->share(function($container) {
+$container->set('configuration', $container->share(function($container) {
     return new Console\Configuration(array(
         'view.path'         => realpath(__DIR__ . '/../views'),
         'page.path'         => realpath(__DIR__ . '/../views/pages'),
@@ -14,14 +14,14 @@ $container['configuration'] = $container->share(function($container) {
         'post.path'         => realpath(__DIR__ . '/../views/pages/posts'),
         'post.save.path'    => realpath(__DIR__ . '/../../posts'),
     ));
-});
+}));
 
-$container['twig'] = $container->share(function($container) {
+$container->set('twig', $container->share(function($container) {
     $twig = new Twig_Environment(
         new Twig_Loader_Filesystem(array(
-            $container['configuration']->get('view.path'),
-            $container['configuration']->get('page.path'),
-            $container['configuration']->get('post.path'),
+            $container->get('configuration')->get('view.path'),
+            $container->get('configuration')->get('page.path'),
+            $container->get('configuration')->get('post.path'),
         ))
     );
     
@@ -30,33 +30,42 @@ $container['twig'] = $container->share(function($container) {
     ));
     
     return $twig;
-});
+}));
 
-$container['page.repository'] = $container->share(function($container) {
-    return new PHPNE\Entity\PageRepository(
-        $container['configuration']->get('page.path')
+$container->set('page.repository', $container->share(function($container) {
+    return new PHPNE\Entity\Repository\PageRepository(
+        $container->get('configuration')->get('page.path')
     );
-});
+}));
 
-$container['page.writer'] = $container->share(function($container) {
-    $writer = new PHPNE\Entity\PageWriter($container['twig']);
-    
-    return $writer->setSavePath($container['configuration']->get('page.save.path'));
-});
+$container->set('page.renderer', $container->share(function($container) {
+    return new PHPNE\Entity\Renderer\PageRenderer($container->get('twig'));
+}));
 
-$container['post.repository'] = $container->share(function($container) {
-    return new PHPNE\Entity\PostRepository(
-        $container['configuration']->get('post.path')
+$container->set('page.writer', $container->share(function($container) {
+    return new PHPNE\Entity\Writer\PageWriter(
+        $container->get('configuration')->get('page.save.path')
     );
-});
+}));
 
-$container['post.writer'] = $container->share(function($container) {
-    $writer = new PHPNE\Entity\PostWriter($container['twig']);
-    
-    return $writer->setSavePath($container['configuration']->get('post.save.path'));
-});
+$container->set('post.repository', $container->share(function($container) {
+    return new PHPNE\Entity\Repository\PostRepository(
+        $container->get('configuration')->get('post.path')
+    );
+}));
 
-$console = new Console\Application;
-$console->setContainer($container);
-$console->add(new Console\Command\GenerateCommand);
+$container->set('post.renderer', $container->share(function($container) {
+    return new PHPNE\Entity\Renderer\PostRenderer($container->get('twig'));
+}));
+
+$container->set('post.writer', $container->share(function($container) {
+    return new PHPNE\Entity\Writer\PostWriter(
+        $container->get('configuration')->get('post.save.path')
+    );
+}));
+
+$console = new Console\Application($container);
+$console->add(new Console\Command\GeneratePagesCommand);
+$console->add(new Console\Command\GeneratePostsCommand);
+$console->add(new Console\Command\GenerateAllCommand);
 $console->run();

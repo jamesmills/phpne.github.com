@@ -1,5 +1,7 @@
 <?php
-namespace PHPNE\Entity;
+namespace PHPNE\Entity\Repository;
+
+use PHPNE\Entity\Page;
 
 class PageRepository extends AbstractRepository
 {
@@ -21,9 +23,6 @@ class PageRepository extends AbstractRepository
 
     private function build($file)
     {
-        $page = new Page;
-        $page->setName($file->getFilename());
-
-        return $page;
+        return new Page($file);
     }
 }

@@ -1,5 +1,7 @@
 <?php
-namespace PHPNE\Entity;
+namespace PHPNE\Entity\Repository;
+
+use PHPNE\Entity\Post;
 
 class PostRepository extends AbstractRepository
 {
@@ -20,11 +22,6 @@ class PostRepository extends AbstractRepository
 
     private function build($file)
     {
-        $post = new Post;
-        $name = substr($file->getFilename(), 0, -3) . '.html';
-        $post->setName($name);
-        $post->setContent($file->getContents());
-
-        return $post;
+        return new Post($file);
     }
 }

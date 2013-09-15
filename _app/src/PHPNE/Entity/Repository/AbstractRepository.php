@@ -1,5 +1,5 @@
 <?php
-namespace PHPNE\Entity;
+namespace PHPNE\Entity\Repository;
 
 use Symfony\Component\Finder\Finder;
 

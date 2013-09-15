@@ -12,8 +12,9 @@ class Application extends BaseApplication
     protected
         $container;
 
-    public function __construct($name = self::NAME, $version = self::VERSION)
+    public function __construct(Container $container, $name = self::NAME, $version = self::VERSION)
     {
+        $this->setContainer($container);
         parent::__construct($name, $version);
     }
 
