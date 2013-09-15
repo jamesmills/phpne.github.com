@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    {% include '_partials/head.html' %}
+    <title>{% block title %}PHP North East{% endblock %}</title>
+    {% include 'partials/head.html' %}
   </head>
     <body>
         {% block content %}{% endblock %}
