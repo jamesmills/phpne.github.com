@@ -12,8 +12,9 @@ class Application extends BaseApplication
     protected
         $container;
 
-    public function __construct($name = self::NAME, $version = self::VERSION)
+    public function __construct(Container $container, $name = self::NAME, $version = self::VERSION)
     {
+        $this->setContainer($container);
         parent::__construct($name, $version);
     }
 
@@ -27,20 +28,5 @@ class Application extends BaseApplication
         $this->container = $container;
 
         return $this;
-    }
-
-    public function getConfiguration()
-    {
-        return $this->container['configuration'];
-    }
-
-    public function getTwig()
-    {
-        return $this->container['twig'];
-    }
-
-    public function getFinder()
-    {
-        return $this->container['finder'];
     }
 }

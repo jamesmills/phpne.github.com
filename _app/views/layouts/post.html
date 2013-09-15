@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}PHP North East{% endblock %}</title>
+    {% include 'partials/head.html' %}
+  </head>
+    <body>
+        {{ post.content | markdown }}
+    </body>
+</html>
